@@ -46,7 +46,7 @@ const Navbar = memo(function () {
                 </ButtonSmall>
                 <div className="flex gap-2 items-center" onClick={handleProfileClick}>
                     <div className="flex flex-col items-center">
-                        <div className="text-lg font-nunito leading-none">{user.username}</div>
+                        <div className="text-lg font-nunito leading-none">{user.fullName}</div>
                         <div
                             className={`text-sm relative font-semibold capitalize tracking-wide px-3 rounded-md bg-opacity-30 ${
                                 badgeColorUser[user.role]

@@ -25,7 +25,7 @@ function Register() {
         try {
             await axiosInstance.post("auth/register", data);
             alert("Pendaftaran berhasil! Link verifikasi akun telah dikirim ke email kamu.");
-            navigate("/auth/login");
+            navigate("/auth/verify-otp", { state: { email: data.email, type: "email_verification" } });
         } catch (error: any) {
             console.log(error.response.data);
             const axiosError = error as AxiosError;

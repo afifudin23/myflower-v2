@@ -1,9 +1,9 @@
 import ProtectedRoute from "@/components/templates/ProtectedRoute";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import Login from "@/pages/auth/LoginPage";
+import OTPVerificationPage from "@/pages/auth/OTPVerificationPage";
 import Register from "@/pages/auth/RegisterPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
-import VerifyEmailPage from "@/pages/auth/VerifyEmailPage";
 import CartPage from "@/pages/carts/CartPage";
 import OrderCheckoutPage from "@/pages/orders/OrderCheckoutPage";
 import OrderDetailPage from "@/pages/orders/OrderDetailPage";
@@ -24,7 +24,7 @@ function AppRouter() {
                 <Route path="/auth">
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
-                    <Route path="verify-email" element={<VerifyEmailPage />} />
+                    <Route path="verify-otp" element={<OTPVerificationPage />} />
                     <Route path="forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="reset-password" element={<ResetPasswordPage />} />
                 </Route>

@@ -1,27 +1,20 @@
 // Customer Category
-export const CUSTOMER_CATEGORY_ITEMS = ["UMUM", "PEMDA", "AKADEMIK", "RUMAH_SAKIT", "POLISI_MILITER", "PERBANKAN"];
-export const CUSTOMER_CATEGORY_LABELS: any = {
-    UMUM: "Umum",
-    PEMDA: "Instansi",
-    AKADEMIK: "Akademik",
-    RUMAH_SAKIT: "Rumah Sakit",
-    POLISI_MILITER: "Polisi/Militer",
-    PERBANKAN: "Perbankan",
-};
+export const CUSTOMER_CATEGORY_ITEMS = ["UMUM", "PEMDA", "PERBANKAN"];
+export const CUSTOMER_CATEGORY_LABELS: any = { UMUM: "Umum", PEMDA: "Pemda", PERBANKAN: "Perbankan" };
 
 // Delivery Option
-export const DELIVERY_OPTION_ITEMS = ["DELIVERY", "PICKUP"];
+export const DELIVERY_OPTION_ITEMS = ["DELIVERY", "SELF_PICKUP"];
 export const DELIVERY_OPTION_LABELS: any = {
     DELIVERY: "Kirim ke Alamat",
-    PICKUP: "Ambil di Tempat",
+    SELF_PICKUP: "Ambil di Tempat",
 };
 
 // Payment Method
 export const PAYMENT_METHOD_ITEMS = ["COD", "OTHERS"];
 export const PAYMENT_METHOD_LABELS: any = {
-    OTHERS: "Lainnya (Transfer Bank)",
-    COD: "Cash On Delivery (COD)",
     ALL: "Semua",
+    COD: "COD (Cash On Delivery)",
+    OTHERS: "Lainnya (Transfer Bank)",
     BANK_TRANSFER: "TRANSFER BANK",
     CASH: "TUNAI",
     CREDIT_CARD: "KARTU KREDIT",
@@ -36,7 +29,6 @@ export const PAYMENT_STATUS_LABELS: any = {
     PAID: "Lunas",
     PENDING: "Menunggu",
     UNPAID: "Belum Lunas",
-    CANCELED: "Batal",
     EXPIRED: "Expired",
     REFUNDED: "Refund",
     DENIED: "Ditolak",

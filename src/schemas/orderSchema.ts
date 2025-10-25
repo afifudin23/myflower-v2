@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const orderFormSchema = z
     .object({
-        deliveryOption: z.enum(["DELIVERY", "PICKUP"], {
+        deliveryOption: z.enum(["DELIVERY", "SELF_PICKUP"], {
             required_error: "Harap pilih metode pengiriman terlebih dahulu.",
         }),
         deliveryAddress: z.string().nullish(),
@@ -20,7 +20,7 @@ export const orderFormSchema = z
     })
     .superRefine((data, ctx) => {
         // If delivery option is "Pickup", set delivery address, date, and shipping cost to null
-        if (data.deliveryOption === "PICKUP") {
+        if (data.deliveryOption === "SELF_PICKUP") {
             data.deliveryAddress = null;
         }
 

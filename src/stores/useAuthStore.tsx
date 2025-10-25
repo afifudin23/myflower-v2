@@ -36,7 +36,7 @@ const useAuthStore = create<AuthState>()(
                 }
 
                 try {
-                    await axiosInstance.get("/auth/verify"); // token valid
+                    await axiosInstance.get("/auth/verify-auth"); // token valid
                     set({ user, isAuthenticated: true });
                 } catch (err) {
                     console.error("🔒 Token invalid:", err);

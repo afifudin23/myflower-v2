@@ -11,7 +11,7 @@ function useOrders() {
         hasFetched.current = true;
         const getAllData = async () => {
             try {
-                const response = await axiosInstance.get(`/orders/customer`);
+                const response = await axiosInstance.get(`/orders/myflower`);
                 setOrders(response.data.data);
             } catch (error: any) {
                 setOrders(error.response.data);

@@ -59,7 +59,7 @@ function OrderCheckoutPage() {
         );
         if (confirm === false) return;
         if (confirm && order) {
-            await axiosInstance.delete(`/orders/customer/${order.orderCode}`);
+            await axiosInstance.delete(`/orders/myflower/${order.orderCode}`);
             alert("Pesanan berhasil dibatalkan.");
         }
         navigate("/products");
@@ -69,16 +69,16 @@ function OrderCheckoutPage() {
         try {
             let createOrder = order;
             if (!createOrder) {
-                const response = await axiosInstance.post("/orders/customer", data);
+                const response = await axiosInstance.post("/orders/myflower", data);
                 createOrder = response.data.data;
                 setOrder(response.data.data);
             }
 
             if (data.paymentMethod === "COD") {
                 // Send notification email to customer
-                await axiosInstance.post("/orders/customer/mailer/create", createOrder);
-                await axiosInstance.post("/orders/customer/notification", createOrder);
-                await axiosInstance.delete("/carts");
+                // await axiosInstance.post("/orders/customer/mailer/create", createOrder);
+                // await axiosInstance.post("/orders/customer/notification", createOrder);
+                // await axiosInstance.delete("/carts");
                 alert("Pesanan berhasil dibuat. Silahkan melakukan pembayaran melalui metode COD.");
                 navigate("/products");
                 return true;
