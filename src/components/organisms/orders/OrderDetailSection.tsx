@@ -26,7 +26,6 @@ function OrderDetailSection({
     handleClickReview,
     handlePrintPdf,
 }: any) {
-    console.log(order);
     const disabledStatus = order.orderStatus !== "IN_PROCESS";
     const disabledNota = order.orderStatus === "CANCELED" || order.paymentStatus === "PENDING";
     return (
@@ -176,7 +175,7 @@ function OrderDetailSection({
                 >
                     <button
                         type="button"
-                        disabled={true}
+                        disabled={disabledNota}
                         className={`flex items-center justify-center flex-col lg:flex-row gap-1 xl:gap-2 w-full h-full rounded-md bg-[#3c4166] ${
                             disabledNota ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3c4166]/80"
                         }`}

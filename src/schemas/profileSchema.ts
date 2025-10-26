@@ -11,10 +11,7 @@ export const profileFormSchema = z
         phoneNumber: z
             .string({ required_error: "Nomor Telepon Harus Diisi" })
             .nonempty({ message: "Nomor Telepon Harus Diisi" }),
-        // customerCategory: z
-        //     .string()
-        //     .nullish()
-        //     .transform((val) => (val ? formatters.formatCapital(val) : null)),
+        customerCategory: z.string().nullish(),
         oldPassword: z.string().nullish(),
         newPassword: z.string().nullish(),
         confPassword: z.string().nullish(),

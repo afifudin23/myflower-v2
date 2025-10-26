@@ -29,12 +29,13 @@ function OrderDetailPage() {
         const confirmed = window.confirm("Apakah Anda yakin ingin membatalkan pesanan ini?");
         if (!confirmed) return;
         try {
-            const response = await axiosInstance.patch(`/orders/customer/${order.id}/cancel`);
+            const response = await axiosInstance.patch(`/orders/myflower/${order.id}/cancel`);
             const data = response.data.data;
             setOrder(data);
             localStorage.setItem("orderDetail", JSON.stringify(data));
-            await axiosInstance.post("/orders/customer/mailer/cancel", data);
+            // await axiosInstance.post("/orders/myflower/mailer/cancel", data); FIX IT
             alert("Pesanan berhasil dibatalkan.");
+            navigate("/products");
         } catch (error: any) {
             console.log(error.response.data);
             alert("Gagal membatalkan pesanan.");
@@ -44,12 +45,13 @@ function OrderDetailPage() {
         const confirmed = window.confirm("Apakah Anda yakin ingin menerima pesanan ini?");
         if (!confirmed) return;
         try {
-            const response = await axiosInstance.patch(`/orders/customer/${order.id}/confirm`);
+            const response = await axiosInstance.patch(`/orders/myflower/${order.id}/confirm`);
             const data = response.data.data;
             setOrder(data);
             localStorage.setItem("orderDetail", JSON.stringify(data));
-            await axiosInstance.post("/orders/customer/mailer/confirm", data);
+            // await axiosInstance.post("/orders/customer/mailer/confirm", data); FIX IT
             alert("Pesanan berhasil diterima.");
+            navigate("/products");
         } catch (error: any) {
             console.log(error.response.data);
             alert("Gagal menerima pesanan.");
@@ -62,8 +64,8 @@ function OrderDetailPage() {
                 onSuccess: async () => {
                     await axiosInstance.delete("/carts");
                     localStorage.removeItem("snapToken");
-                    await axiosInstance.post("/orders/customer/mailer/create", order);
-                    await axiosInstance.post("/orders/customer/notification", order);
+                    // await axiosInstance.post("/orders/customer/mailer/create", order); FIX IT
+                    // await axiosInstance.post("/orders/customer/notification", order);
                 },
                 onPending: () => {
                     localStorage.setItem("snapToken", snapToken);
@@ -71,7 +73,7 @@ function OrderDetailPage() {
                 },
                 onError: async (error: any) => {
                     console.error("Payment Failed:", error);
-                    await axiosInstance.delete("/orders/customer/" + order.orderCode);
+                    // await axiosInstance.delete("/orders/myflower/" + order.orderCode); FIX IT
                     alert("Terjadi kesalahan saat pembayaran.");
                 },
             });

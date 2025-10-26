@@ -3,10 +3,10 @@ export const CUSTOMER_CATEGORY_ITEMS = ["UMUM", "PEMDA", "PERBANKAN"];
 export const CUSTOMER_CATEGORY_LABELS: any = { UMUM: "Umum", PEMDA: "Pemda", PERBANKAN: "Perbankan" };
 
 // Delivery Option
-export const DELIVERY_OPTION_ITEMS = ["DELIVERY", "SELF_PICKUP"];
+export const DELIVERY_OPTION_ITEMS = ["SELF_PICKUP", "DELIVERY"];
 export const DELIVERY_OPTION_LABELS: any = {
-    DELIVERY: "Kirim ke Alamat",
     SELF_PICKUP: "Ambil di Tempat",
+    DELIVERY: "Kirim ke Alamat",
 };
 
 // Payment Method

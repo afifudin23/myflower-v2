@@ -101,7 +101,7 @@ function OrderCheckoutPage() {
                 },
                 onError: async (error: any) => {
                     console.error("Payment Failed:", error);
-                    await axiosInstance.delete("/orders/customer/" + currentOrderCode);
+                    // await axiosInstance.delete("/orders/myflower/" + currentOrderCode); FIX IT
                     setOrder(null);
                     alert("Terjadi kesalahan saat pembayaran.");
                 },

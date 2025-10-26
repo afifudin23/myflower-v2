@@ -24,11 +24,11 @@ function Login() {
     });
     const onSubmit = async (data: LoginFormType) => {
         try {
-            const response = await axiosInstance.post("auth/login", {
+            await axiosInstance.post("auth/login", {
                 username: data.username,
                 password: data.password,
             });
-            useAuthStore.getState().setUser(response.data);
+            await useAuthStore.getState().getMe();
             navigate("/products");
         } catch (error: any) {
             const axiosError = error as AxiosError;

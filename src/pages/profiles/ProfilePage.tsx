@@ -3,18 +3,22 @@ import Button from "@/components/atoms/Button";
 import SectionTitle from "@/components/atoms/SectionTitle";
 import ProfileForm from "@/components/organisms/profiles/ProfileForm";
 import MainLayout from "@/components/templates/MainLayout";
+import { CUSTOMER_CATEGORY_LABELS } from "@/constants/category";
 import { BG_COLORS } from "@/constants/colors";
 import { profileFormSchema } from "@/schemas/profileSchema";
 import useAuthStore from "@/stores/useAuthStore";
 import { axiosInstance } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { AxiosError } from "axios";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 function ProfilePage() {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    useEffect(() => {});
     const {
         handleSubmit,
         control,
@@ -26,7 +30,7 @@ function ProfilePage() {
             username: user.username,
             email: user.email,
             phoneNumber: user.phoneNumber,
-            // customerCategory: formatters.formatCapital(user.customerCategory || ""),
+            customerCategory: user.customerCategory,
             oldPassword: "",
             newPassword: "",
             confPassword: "",
@@ -35,9 +39,10 @@ function ProfilePage() {
 
     const onSubmit = handleSubmit(async (data) => {
         try {
-            const response = await axiosInstance.put("users/profile", data);
+            console.log(data)
+            await axiosInstance.patch("users/profile", data);
             alert("Profil berhasil diubah.");
-            localStorage.setItem("user", JSON.stringify(response.data.data));
+            await useAuthStore.getState().getMe();
             navigate("/products");
         } catch (error: any) {
             console.log(error.response.data);

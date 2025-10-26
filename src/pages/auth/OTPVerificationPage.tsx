@@ -22,7 +22,7 @@ function OTPVerificationPage() {
             const response = await axiosInstance.post("/auth/otp/verify", { email, code: otp, type });
             if (type === "email_verification") {
                 if (response.status === 200) {
-                    useAuthStore.getState().setUser(response.data.data);
+                    useAuthStore.getState().getMe();
                     setMessage("Email terverifikasi. Mengalihkan ke halaman dashboard...");
                     setShowAlert(true);
                 } else {
