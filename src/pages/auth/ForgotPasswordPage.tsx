@@ -1,29 +1,36 @@
+import { Loading } from "@/components/atoms";
+import { AlertInfo } from "@/components/molecules";
 import { FORGOT_PASSWORD_FIELDS } from "@/components/organisms/auth/auth.constants";
 import AuthForm from "@/components/organisms/auth/AuthForm";
 import AuthTemplate from "@/components/templates/AuthTemplate";
 import { TEXT_COLORS } from "@/constants/colors";
+import { authSchema } from "@/schemas";
 import { axiosInstance } from "@/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { AxiosError } from "axios";
+import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
 function ForgotPasswordPage() {
     const [message, setMessage] = useState("");
+    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [email, setEmail] = useState<string>("");
     const navigate = useNavigate();
     const {
         register,
         handleSubmit,
-        reset,
         formState: { errors },
-    } = useForm<any>({ defaultValues: { email: "" } });
+    } = useForm<authSchema.ForgotPasswordType>({ resolver: zodResolver(authSchema.forgotPassword) });
     const onSubmit = handleSubmit(async (data) => {
+        setIsLoading(true);
         try {
-            await axiosInstance.post("/auth/forgot-password", data);
-            alert("Email reset sudah dikirim, silakan dicek!");
-            setMessage("");
-            reset({ email: "" });
-            navigate("/auth/login");
+            await axiosInstance.post("/auth/otp/resend", { email: data.email, type: "password_reset" });
+            setEmail(data.email);
+            setShowAlert(true);
+            setMessage("OTP reset password telah dikirim, silahkan cek email!");
         } catch (error: any) {
             const axiosError = error as AxiosError;
             if (axiosError.code === "ERR_NETWORK") {
@@ -32,12 +39,13 @@ function ForgotPasswordPage() {
             if (axiosError.response) {
                 setMessage(error.response.data.message);
             }
+        } finally {
+            setIsLoading(false);
         }
     });
 
     return (
         <AuthTemplate description="Masukkan email kamu untuk mengatur ulang kata sandi">
-            <p className="text-red-500 ml-4 mb-5 text-center text-sm 2xl:text-lg">{message}</p>
             <AuthForm
                 fields={FORGOT_PASSWORD_FIELDS}
                 register={register}
@@ -53,6 +61,22 @@ function ForgotPasswordPage() {
                     </p>
                 }
             />
+            {/* Custom Alert */}
+            <AnimatePresence>
+                {showAlert && (
+                    <AlertInfo
+                        handleAlert={() => {
+                            if (message.includes("OTP reset password telah dikirim, silahkan cek email!"))
+                                navigate("/auth/verify-otp", { state: { email, type: "password_reset" } });
+                            setShowAlert(false);
+                        }}
+                        message={message}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Loading */}
+            {isLoading && <Loading />}
         </AuthTemplate>
     );
 }

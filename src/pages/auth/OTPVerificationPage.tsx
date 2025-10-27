@@ -14,6 +14,7 @@ function OTPVerificationPage() {
     const [loading, setLoading] = useState(false);
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
+    const [resetToken, setResetToken] = useState("");
 
     const handleVerify = async (otp: string) => {
         setLoading(true);
@@ -23,15 +24,16 @@ function OTPVerificationPage() {
             if (type === "email_verification") {
                 if (response.status === 200) {
                     useAuthStore.getState().getMe();
-                    setMessage("Email terverifikasi. Mengalihkan ke halaman dashboard...");
+                    setMessage("Email terverifikasi. Mengalihkan ke halaman products...");
                     setShowAlert(true);
                 } else {
                     setError("Gagal memverifikasi OTP. Silahkan coba lagi.");
                 }
             } else if (type === "password_reset") {
                 if (response.status === 200) {
-                    console.log(response.data.data);
-                    navigate("/auth/reset-password", { state: { token: response.data.data.resetToken } });
+                    setMessage("OTP verifikasi sukses. Mengalihkan ke halaman reset password...");
+                    setShowAlert(true);
+                    setResetToken(response.data.data.resetToken);
                 } else {
                     setError("Gagal memverifikasi OTP. Silahkan coba lagi.");
                 }
@@ -76,8 +78,10 @@ function OTPVerificationPage() {
                 {showAlert && (
                     <AlertInfo
                         handleAlert={() => {
-                            if (message.includes("Email terverifikasi. Mengalihkan ke halaman dashboard..."))
+                            if (message.includes("Email verifikasi sukses. Mengalihkan ke halaman products..."))
                                 navigate("/products");
+                            if (message.includes("OTP verifikasi sukses. Mengalihkan ke halaman reset password..."))
+                                navigate("/auth/reset-password", { state: { token: resetToken } });
                             setShowAlert(false);
                         }}
                         message={message}

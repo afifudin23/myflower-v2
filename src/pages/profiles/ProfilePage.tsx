@@ -3,7 +3,6 @@ import Button from "@/components/atoms/Button";
 import SectionTitle from "@/components/atoms/SectionTitle";
 import ProfileForm from "@/components/organisms/profiles/ProfileForm";
 import MainLayout from "@/components/templates/MainLayout";
-import { CUSTOMER_CATEGORY_LABELS } from "@/constants/category";
 import { BG_COLORS } from "@/constants/colors";
 import { profileFormSchema } from "@/schemas/profileSchema";
 import useAuthStore from "@/stores/useAuthStore";
@@ -22,6 +21,7 @@ function ProfilePage() {
     const {
         handleSubmit,
         control,
+
         formState: { errors },
     } = useForm({
         resolver: zodResolver(profileFormSchema),

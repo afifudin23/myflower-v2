@@ -1,6 +1,7 @@
 import Button from "@/components/atoms/Button";
 import { BG_COLORS, TEXT_COLORS } from "@/constants/colors";
 import { Link } from "react-router-dom";
+import { FiChevronDown } from "react-icons/fi";
 
 function AuthForm({ fields, onSubmit, register, errors, buttonName, link, formType }: any) {
     return (
@@ -15,17 +16,22 @@ function AuthForm({ fields, onSubmit, register, errors, buttonName, link, formTy
                                 switch (type) {
                                     case "dropdown":
                                         return (
-                                            <select
-                                                {...register(name)}
-                                                className="border p-2 pl-4 rounded-2xl w-full font-medium text-sm 2xl:text-base"
-                                            >
-                                                <option value="">-- {placeholder || "Pilih"} --</option>
-                                                {options?.map((option: any) => (
-                                                    <option key={option} value={option} className="">
-                                                        {optionLabel[option]}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            <div className="relative w-full">
+                                                <select
+                                                    {...register(name)}
+                                                    className="w-full appearance-none rounded-2xl border border-gray-300 bg-white p-2 pl-4  text-sm 2xl:text-base font-medium"
+                                                >
+                                                    <option value="">-- {placeholder || "Pilih"} --</option>
+                                                    {options?.map((option: any) => (
+                                                        <option key={option} value={option}>
+                                                            {optionLabel[option]}
+                                                        </option>
+                                                    ))}
+                                                </select>
+
+                                                {/* Icon custom */}
+                                                <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none h-4 w-4" />
+                                            </div>
                                         );
 
                                     case "password":
@@ -47,7 +53,10 @@ function AuthForm({ fields, onSubmit, register, errors, buttonName, link, formTy
                     );
                 })}
                 {formType === "login" && (
-                    <Link to="/auth/forgot-password" className={`pl-3 text-sm font-medium hover:underline w-fit ${TEXT_COLORS.primary} `}>
+                    <Link
+                        to="/auth/forgot-password"
+                        className={`pl-3 text-sm font-medium hover:underline w-fit ${TEXT_COLORS.primary} `}
+                    >
                         Lupa Password?
                     </Link>
                 )}
