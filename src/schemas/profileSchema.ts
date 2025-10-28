@@ -1,9 +1,13 @@
-import { z } from "zod";
+import { z, type TypeOf } from "zod";
 
-export const profileFormSchema = z
+export const profile = z
     .object({
         fullName: z.string({ required_error: "Nama Harus Diisi" }).nonempty({ message: "Nama Harus Diisi" }),
-        username: z.string({ required_error: "Username Harus Diisi" }).nonempty({ message: "Username Harus Diisi" }),
+        username: z
+            .string()
+            .nonempty({ message: "Username Harus Diisi" })
+            .min(3, "Username minimal 3 karakter")
+            .max(10, "Username maksimal 10 karakter"),
         email: z
             .string({ required_error: "Email Harus Diisi" })
             .nonempty({ message: "Email Harus Diisi" })
@@ -11,10 +15,12 @@ export const profileFormSchema = z
         phoneNumber: z
             .string({ required_error: "Nomor Telepon Harus Diisi" })
             .nonempty({ message: "Nomor Telepon Harus Diisi" }),
-        customerCategory: z.string().nullish(),
-        oldPassword: z.string().nullish(),
-        newPassword: z.string().nullish(),
-        confPassword: z.string().nullish(),
+        customerCategory: z.enum(["UMUM", "PEMDA", "PERBANKAN"], {
+            message: "Kategori Pelanggan Harus Diisi",
+        }),
+        oldPassword: z.string().min(6, "Password lama minimal 6 karakter").optional().or(z.literal("")),
+        newPassword: z.string().min(6, "Password baru minimal 6 karakter").optional().or(z.literal("")),
+        confPassword: z.string().min(6, "Konfirmasi password minimal 6 karakter").optional().or(z.literal("")),
     })
     .superRefine((data, ctx) => {
         const oneFilled = !!(data.oldPassword || data.newPassword || data.confPassword);
@@ -52,3 +58,4 @@ export const profileFormSchema = z
             });
         }
     });
+export type ProfileType = TypeOf<typeof profile>;

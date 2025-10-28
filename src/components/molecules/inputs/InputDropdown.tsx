@@ -62,7 +62,7 @@ const InputDropdown = ({
                             >
                                 <li
                                     className={`${className} bg-gray-700 hover:bg-slate-400 rounded-lg cursor-pointer ${
-                                        value === null && "bg-slate-500"
+                                        value === undefined && "bg-slate-500"
                                     }`}
                                     onClick={() => {
                                         onChange(undefined);

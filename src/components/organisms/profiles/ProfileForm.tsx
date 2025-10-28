@@ -34,6 +34,11 @@ function ProfileForm({ control, errors }: any) {
                                             {/* Icon custom */}
                                             <FiChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none h-6 w-6" />
                                         </div>
+                                        {errors[item.name] && (
+                                            <p className="text-red-500 text-xs 2xl:text-sm">
+                                                *{errors[item.name]?.message}
+                                            </p>
+                                        )}
                                     </div>
                                 )}
                             />

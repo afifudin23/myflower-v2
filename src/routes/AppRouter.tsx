@@ -30,11 +30,6 @@ function AppRouter() {
                 </Route>
 
                 <Route element={<ProtectedRoute />}>
-                    <Route path="/products">
-                        <Route index element={<ProductsPage />} />
-                        <Route path=":id" element={<ProductDetailPage />} />
-                    </Route>
-
                     <Route path="/carts" element={<CartPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
 
@@ -43,6 +38,10 @@ function AppRouter() {
                         <Route path=":id" element={<OrderDetailPage />} />
                         <Route path="checkout" element={<OrderCheckoutPage />} />
                     </Route>
+                </Route>
+                <Route path="/products">
+                    <Route index element={<ProductsPage />} />
+                    <Route path=":id" element={<ProductDetailPage />} />
                 </Route>
                 <Route path="/orders">
                     <Route path="payment-success" element={<PaymentSuccessPage />} />

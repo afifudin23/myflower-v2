@@ -1,13 +1,16 @@
-import { z } from "zod";
+import { z, type TypeOf } from "zod";
 
-export const orderFormSchema = z
+export const create = z
     .object({
         deliveryOption: z.enum(["DELIVERY", "SELF_PICKUP"], {
-            required_error: "Harap pilih metode pengiriman terlebih dahulu.",
+            message: "Harap pilih metode pengiriman terlebih dahulu.",
         }),
         deliveryAddress: z.string().nullish(),
-        readyDate: z.date({ required_error: "Harap isi tanggal produk jadi terlebih dahulu." }).transform((date) => date.toISOString()),
-        paymentMethod: z.enum(["COD", "OTHERS"],{
+        readyDate: z.date({
+            required_error: "Harap isi tanggal produk jadi terlebih dahulu.",
+            invalid_type_error: "Tanggal tidak valid.",
+        }),
+        paymentMethod: z.enum(["COD", "OTHERS"], {
             required_error: "Harap pilih metode pembayaran terlebih dahulu.",
         }),
         items: z.array(
@@ -33,6 +36,6 @@ export const orderFormSchema = z
                 });
             }
         }
-
-
     });
+
+export type CreateType = TypeOf<typeof create>;
