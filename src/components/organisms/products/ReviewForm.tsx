@@ -31,7 +31,7 @@ const ReviewForm = ({ onSubmit, control, isUpdate, hasPurchased, className }: an
                 )}
             />
 
-            <Button type="submit" colors={{ primary: "#8f40f6", hover: "#773dc4" }} className="w-[10rem] p-1" disabled={!hasPurchased}>
+            <Button type="submit" className="w-[10rem] p-1 bg-[#8f40f6] hover:bg-[#773dc4] text-white rounded-lg" disabled={!hasPurchased}>
                 {isUpdate ? "Edit Ulasan" : "Beri Ulasan"}
             </Button>
         </form>

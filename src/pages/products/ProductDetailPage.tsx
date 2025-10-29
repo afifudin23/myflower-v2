@@ -1,23 +1,32 @@
+import { Loading } from "@/components/atoms";
 import BackButton from "@/components/atoms/BackButton";
+import { AlertInfo } from "@/components/molecules";
 import ProductDetailSection from "@/components/organisms/products/ProductDetailSection";
 import ProductReviewSection from "@/components/organisms/products/ProductReviewSection";
 import ReviewForm from "@/components/organisms/products/ReviewForm";
 import MainLayout from "@/components/templates/MainLayout";
 import { useOrders, useReviews } from "@/hooks";
+import { reviewSchema } from "@/schemas";
 import { axiosInstance } from "@/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 function ProductDetailPage() {
     const [product, setProduct] = useState({ id: "", name: "", images: [], price: 0, stock: 0 });
-    const { reviews, setReviews } = useReviews(product?.id);
+    const { reviews } = useReviews(product?.id);
     const [myReview, setMyReview] = useState<any>(null);
     const { orders } = useOrders();
     const [hasPurchased, setHasPurchased] = useState(false);
     const navigate = useNavigate();
+    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
 
-    const { handleSubmit, control, reset } = useForm({
+    const { handleSubmit, control, reset } = useForm<reviewSchema.CreateType>({
+        resolver: zodResolver(reviewSchema.create),
         defaultValues: {
             id: "",
             rating: 0,
@@ -55,27 +64,30 @@ function ProductDetailPage() {
     }, [reviews, reset, orders, product.id]);
 
     const onCreate = handleSubmit(async (data) => {
+        setIsLoading(true);
         try {
-            const response = await axiosInstance.post(`/products/${product.id}/reviews`, data);
-            setReviews([...reviews, response.data.data]);
-            setMyReview(response.data.data);
-            alert("Review berhasil ditambahkan.");
+            await axiosInstance.post(`/products/${product.id}/reviews`, data);
+            setMessage("Review berhasil ditambahkan");
         } catch (error: any) {
             console.log(error.response.data);
-            alert("Gagal menambahkan review.");
+            setMessage("Gagal menambahkan review.");
+        } finally {
+            setIsLoading(false);
+            setShowAlert(true);
         }
     });
 
     const onUpdate = handleSubmit(async (data) => {
+        setIsLoading(true);
         try {
-            const response = await axiosInstance.put(`/products/${product.id}/reviews/${myReview.id}`, data);
-            const updatedReviews = reviews.map((r: any) => (r.id === myReview.id ? response.data.data : r));
-            setReviews(updatedReviews);
-            setMyReview(response.data.data);
-            alert("Review berhasil diperbarui.");
+            await axiosInstance.post(`/products/${product.id}/reviews`, data);
+            setMessage("Review berhasil diperbarui.");
         } catch (error: any) {
             console.log(error.response.data);
-            alert("Gagal menambahkan review.");
+            setMessage("Gagal menambahkan review.");
+        } finally {
+            setIsLoading(false);
+            setShowAlert(true);
         }
     });
 
@@ -92,6 +104,23 @@ function ProductDetailPage() {
                 />
                 <ProductReviewSection reviews={reviews} />
             </div>
+
+            {/* Custom Alert */}
+            <AnimatePresence>
+                {showAlert && (
+                    <AlertInfo
+                        handleAlert={() => {
+                            if (["Review berhasil"].some((msg) => message.includes(msg)))
+                                navigate("/products");
+                            setShowAlert(false);
+                        }}
+                        message={message}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Loading */}
+            {isLoading && <Loading />}
         </MainLayout>
     );
 }

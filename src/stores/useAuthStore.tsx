@@ -8,6 +8,7 @@ interface AuthState {
     isAuthenticated: boolean;
     loading: boolean;
     verifyToken: () => Promise<void>;
+    setUser: (user: any) => void;
     getMe: () => Promise<void>;
     logout: () => Promise<void>;
 }
@@ -18,6 +19,11 @@ const useAuthStore = create<AuthState>()(
             user: null,
             isAuthenticated: false,
             loading: true,
+
+            setUser: (user: any) => {
+                localStorage.setItem("user", JSON.stringify(user));
+                set({ user, isAuthenticated: true });
+            },
 
             getMe: async () => {
                 const response = await axiosInstance.get("/users/me");
@@ -31,7 +37,7 @@ const useAuthStore = create<AuthState>()(
                 const user = localStorage.getItem("user");
 
                 if (!user) {
-                    console.log(user)
+                    console.log(user);
                     await axiosInstance.post("/auth/logout");
                     localStorage.clear();
                     set({ user: null, isAuthenticated: false, loading: false });

@@ -5,8 +5,8 @@ import MainLayout from "@/components/templates/MainLayout";
 import { useProducts } from "@/hooks";
 import { axiosInstance } from "@/utils";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function ProductsPage() {
     const { products } = useProducts();
@@ -14,8 +14,18 @@ function ProductsPage() {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
 
+    const location = useLocation();
+
+    useEffect(() => {
+        const state = location.state as { message?: string; };
+        if (state?.message) {
+            setMessage(state.message);
+            setShowAlert(true);
+            navigate("/products", { state: {} });
+        }
+    }, [location, navigate]);
+
     const handleClick = (product: any) => {
-        console.log(product);
         localStorage.setItem("productDetail", JSON.stringify(product));
         navigate(`/products/${product.id}`);
     };

@@ -27,7 +27,6 @@ function ProfilePage() {
     const {
         handleSubmit,
         control,
-        watch,
         formState: { errors },
     } = useForm<profileSchema.ProfileType>({
         resolver: zodResolver(profileSchema.profile),
@@ -42,11 +41,9 @@ function ProfilePage() {
             confPassword: "",
         },
     });
-    console.log(watch("customerCategory"));
     const onSubmit = handleSubmit(async (data) => {
         setIsLoading(true);
         try {
-            console.log(data);
             await axiosInstance.patch("users/profile", data);
             await useAuthStore.getState().getMe();
             setMessage("Profil berhasil diubah.");
@@ -66,6 +63,7 @@ function ProfilePage() {
 
     const handleLogout = async () => {
         await useAuthStore.getState().logout();
+        navigate("/auth/login", { state: { message: "Anda telah berhasil logout" } });
     };
     return (
         <MainLayout className="w-full max-w-3xl">

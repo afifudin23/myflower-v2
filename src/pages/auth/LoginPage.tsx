@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { AxiosError } from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthTemplate from "@/components/templates/AuthTemplate";
 import AuthForm from "@/components/organisms/auth/AuthForm";
 import { TEXT_COLORS } from "@/constants/colors";
@@ -20,6 +20,24 @@ function Login() {
     const [message, setMessage] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const location = useLocation();
+
+    useEffect(() => {
+        const state = location.state as { message?: string };
+        if (state?.message) {
+            setMessage(state.message);
+            setShowAlert(true);
+
+            navigate("/auth/login", { state: {} });
+        }
+    }, [location, navigate]);
+
+    useEffect(() => {
+        if (user?.username) {
+            navigate("/products");
+        }
+    }, [navigate, user]);
 
     const {
         register,
@@ -42,8 +60,9 @@ function Login() {
                 setShowAlert(true);
                 return;
             }
+            navigate("/products", { state: { message: "Selamat datang kembali, " + resData.fullName + " !" } });
+            useAuthStore.getState().setUser(resData);
             await useAuthStore.getState().getMe();
-            navigate("/products");
         } catch (error: any) {
             const axiosError = error as AxiosError;
             setIsLoading(false);
