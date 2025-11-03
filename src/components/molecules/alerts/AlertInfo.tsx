@@ -11,7 +11,7 @@ function AlertInfo({ handleAlert, message }: AlertInfoProps) {
     useEffect(() => {
         const timer = setTimeout(() => {
             handleAlert();
-        }, 3000);
+        }, 2000);
         return () => clearTimeout(timer);
     }, [handleAlert]);
 

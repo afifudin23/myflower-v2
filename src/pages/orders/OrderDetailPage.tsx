@@ -1,9 +1,12 @@
+import { Loading } from "@/components/atoms";
 import BackButton from "@/components/atoms/BackButton";
+import { AlertConfirm, AlertInfo } from "@/components/molecules";
 import OrderDetailSection from "@/components/organisms/orders/OrderDetailSection";
 import OrderReceipt from "@/components/organisms/orders/OrderReceipt";
 import MainLayout from "@/components/templates/MainLayout";
 import { axiosInstance } from "@/utils";
 import { pdf } from "@react-pdf/renderer";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +14,10 @@ function OrderDetailPage() {
     const [order, setOrder] = useState<any>({});
     const [snapToken, setSnapToken] = useState<string | null>("");
     const navigate = useNavigate();
+    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [showAlertConfirm, setShowAlertConfirm] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
 
     useEffect(() => {
         const storedOrder = JSON.parse(localStorage.getItem("orderDetail") || "{}");
@@ -25,56 +32,61 @@ function OrderDetailPage() {
         document.body.appendChild(script);
     }, []);
 
+    const confirmCancelOrder = () => {
+        setMessage("Apakah Anda yakin ingin membatalkan pesanan ini?");
+        setShowAlertConfirm(true);
+    };
     const handleCancelOrder = async () => {
-        const confirmed = window.confirm("Apakah Anda yakin ingin membatalkan pesanan ini?");
-        if (!confirmed) return;
+        setIsLoading(true);
         try {
-            const response = await axiosInstance.patch(`/orders/myflower/${order.id}/cancel`);
-            const data = response.data.data;
-            setOrder(data);
-            localStorage.setItem("orderDetail", JSON.stringify(data));
-            // await axiosInstance.post("/orders/myflower/mailer/cancel", data); FIX IT
-            alert("Pesanan berhasil dibatalkan.");
-            navigate("/products");
+            await axiosInstance.patch(`/orders/myflower/${order.id}/cancel`);
+            localStorage.removeItem("orderDetail");
+            localStorage.removeItem("snapToken");
+            setMessage("Pesanan berhasil dibatalkan.");
+            setShowAlert(true);
         } catch (error: any) {
-            console.log(error.response.data);
-            alert("Gagal membatalkan pesanan.");
+            setMessage("Gagal membatalkan pesanan.");
+            setShowAlert(true);
+        } finally {
+            setIsLoading(false);
         }
     };
+
+    const confirmConfirmOrder = () => {
+        setMessage("Apakah Anda yakin pesanan sudah diterima?");
+        setShowAlertConfirm(true);
+    };
     const handleConfirmOrder = async () => {
-        const confirmed = window.confirm("Apakah Anda yakin ingin menerima pesanan ini?");
-        if (!confirmed) return;
+        setIsLoading(true);
         try {
-            const response = await axiosInstance.patch(`/orders/myflower/${order.id}/confirm`);
-            const data = response.data.data;
-            setOrder(data);
-            localStorage.setItem("orderDetail", JSON.stringify(data));
-            // await axiosInstance.post("/orders/customer/mailer/confirm", data); FIX IT
-            alert("Pesanan berhasil diterima.");
-            navigate("/products");
+            await axiosInstance.patch(`/orders/myflower/${order.id}/confirm`);
+            localStorage.removeItem("orderDetail");
+            localStorage.removeItem("snapToken");
+            setMessage("Pesanan berhasil diterima.");
+            setShowAlert(true);
         } catch (error: any) {
-            console.log(error.response.data);
-            alert("Gagal menerima pesanan.");
+            setMessage("Gagal menerima pesanan.");
+            setShowAlert(true);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handlePay = () => {
         if (snapToken) {
             window.snap.pay(snapToken, {
-                onSuccess: async () => {
-                    await axiosInstance.delete("/carts");
+                onSuccess: () => {
+                    localStorage.removeItem("cartItems");
                     localStorage.removeItem("snapToken");
-                    // await axiosInstance.post("/orders/customer/mailer/create", order); FIX IT
-                    // await axiosInstance.post("/orders/customer/notification", order);
+                    window.location.href = "/orders/payment-success";
                 },
                 onPending: () => {
                     localStorage.setItem("snapToken", snapToken);
-                    window.location.href = "/orders/" + order.id;
                 },
                 onError: async (error: any) => {
                     console.error("Payment Failed:", error);
-                    // await axiosInstance.delete("/orders/myflower/" + order.orderCode); FIX IT
-                    alert("Terjadi kesalahan saat pembayaran.");
+                    await axiosInstance.delete("/orders/myflower/" + order.id);
+                    window.location.href = "/orders/payment-failed";
                 },
             });
         }
@@ -97,18 +109,63 @@ function OrderDetailPage() {
     };
 
     return (
-        <MainLayout className="w-full max-w-5xl space-y-6 xl:max-w-7xl mx-auto">
-            <BackButton onClick={() => navigate("/orders")}>Kembali ke Pesanan</BackButton>
+        <MainLayout className="w-full max-w-5xl xl:max-w-7xl mx-auto">
+            <div className="space-y-6">
+                <BackButton onClick={() => navigate("/orders")}>Kembali ke Pesanan</BackButton>
 
-            <OrderDetailSection
-                order={order}
-                snapToken={snapToken}
-                handleCancelOrder={handleCancelOrder}
-                handleConfirmOrder={handleConfirmOrder}
-                handlePay={handlePay}
-                handleClickReview={handleClickReview}
-                handlePrintPdf={handlePrintPdf}
-            />
+                <OrderDetailSection
+                    order={order}
+                    snapToken={snapToken}
+                    handleCancelOrder={confirmCancelOrder}
+                    handleConfirmOrder={confirmConfirmOrder}
+                    handlePay={handlePay}
+                    handleClickReview={handleClickReview}
+                    handlePrintPdf={handlePrintPdf}
+                />
+            </div>
+
+            {/* Custom Alert */}
+            <AnimatePresence>
+                {showAlert && (
+                    <AlertInfo
+                        handleAlert={() => {
+                            if (
+                                ["Pesanan berhasil dibatalkan.", "Pesanan berhasil diterima."].some((msg) =>
+                                    message.includes(msg)
+                                )
+                            )
+                                navigate("/orders");
+                            if (
+                                ["Gagal membatalkan pesanan.", "Gagal menerima pesanan."].some((msg) =>
+                                    message.includes(msg)
+                                )
+                            )
+                                return false;
+                            setShowAlert(false);
+                        }}
+                        message={message}
+                    />
+                )}
+                {showAlertConfirm && message === "Apakah Anda yakin ingin membatalkan pesanan ini?" && (
+                    <AlertConfirm
+                        message={message}
+                        handleAlert={() => {
+                            setShowAlertConfirm(false);
+                        }}
+                        handleResultConfirm={handleCancelOrder}
+                    />
+                )}
+                {showAlertConfirm && message === "Apakah Anda yakin pesanan sudah diterima?" && (
+                    <AlertConfirm
+                        message={message}
+                        handleAlert={() => setShowAlertConfirm(false)}
+                        handleResultConfirm={handleConfirmOrder}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Loading */}
+            {isLoading && <Loading />}
         </MainLayout>
     );
 }

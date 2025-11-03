@@ -1,6 +1,5 @@
 import { AlertInfo } from "@/components/molecules";
 import ProductList from "@/components/organisms/products/ProductList";
-// import ProductSearch from "@/components/organisms/products/ProductSearch";
 import MainLayout from "@/components/templates/MainLayout";
 import { useProducts } from "@/hooks";
 import { axiosInstance } from "@/utils";

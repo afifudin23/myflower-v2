@@ -60,7 +60,7 @@ function Login() {
                 setShowAlert(true);
                 return;
             }
-            navigate("/products", { state: { message: "Selamat datang kembali, " + resData.fullName + " !" } });
+            navigate("/products", { state: { message: "Selamat datang kembali, " + resData.fullName + "!" } });
             useAuthStore.getState().setUser(resData);
             await useAuthStore.getState().getMe();
         } catch (error: any) {

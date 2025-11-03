@@ -39,6 +39,7 @@ function AppRouter() {
                         <Route path="checkout" element={<OrderCheckoutPage />} />
                     </Route>
                 </Route>
+                
                 <Route path="/products">
                     <Route index element={<ProductsPage />} />
                     <Route path=":id" element={<ProductDetailPage />} />

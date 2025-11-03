@@ -26,7 +26,7 @@ function OrderDetailSection({
     handleClickReview,
     handlePrintPdf,
 }: any) {
-    const disabledStatus = order.orderStatus !== "IN_PROCESS";
+    const disabledStatus = !["IN_PROCESS", "DELIVERY"].includes(order.orderStatus);
     const disabledNota = order.orderStatus === "CANCELED" || order.paymentStatus === "PENDING";
     return (
         <div className="flex flex-col gap-5">

@@ -14,7 +14,7 @@ function PaymentFailedPage() {
             </p>
             <Button
                 type="button"
-                onClick={() => (window.location.href = "http://localhost:5174/products")}
+                onClick={() => (window.location.href = "http://localhost:5002/products")}
                 className={`mt-4 px-6 py-2 text-white rounded-md ${BG_COLORS.primary}`}
             >
                 Kembali Belanja

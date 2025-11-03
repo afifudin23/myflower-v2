@@ -2,7 +2,7 @@ import { Loading } from "@/components/atoms";
 import BackButton from "@/components/atoms/BackButton";
 import Button from "@/components/atoms/Button";
 import SectionTitle from "@/components/atoms/SectionTitle";
-import { AlertInfo } from "@/components/molecules";
+import { AlertConfirm, AlertInfo } from "@/components/molecules";
 import InputText from "@/components/molecules/inputs/InputText";
 import OrderForm from "@/components/organisms/orders/OrderForm";
 import MainLayout from "@/components/templates/MainLayout";
@@ -23,8 +23,16 @@ function OrderCheckoutPage() {
     const totalItem = cartItems.reduce((total: number, item: any) => total + item.quantity, 0);
     const totalPrice = cartItems.reduce((total: number, item: any) => total + item.product.price * item.quantity, 0);
     const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [showAlertConfirm, setShowAlertConfirm] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
+
+    useEffect(() => {
+        const item = JSON.parse(localStorage.getItem("cartItems") || "[]");
+        if (!item.length) {
+            navigate("/products");
+        }
+    }, [navigate]);
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -57,14 +65,14 @@ function OrderCheckoutPage() {
         control,
         name: "items",
     });
+    const confirmBackButton = () => {
+        setMessage("Apakah Anda yakin ingin meninggalkan halaman ini? Perubahan yang belum disimpan akan hilang.");
+        setShowAlertConfirm(true);
+    };
 
     const handleBackButton = async () => {
-        const confirm = window.confirm(
-            "Apakah Anda yakin ingin meninggalkan halaman ini? Perubahan yang belum disimpan akan hilang."
-        );
-        if (confirm === false) return;
-        if (confirm && order) {
-            await axiosInstance.delete(`/orders/myflower/${order.orderCode}`);
+        if (order) {
+            await axiosInstance.delete(`/orders/myflower/${order.id}`);
             setMessage("Pesanan berhasil dibatalkan.");
             setShowAlert(true);
         }
@@ -86,6 +94,7 @@ function OrderCheckoutPage() {
 
             if (data.paymentMethod === "COD") {
                 setMessage("Pesanan berhasil dibuat. Silahkan melakukan pembayaran melalui metode COD");
+                setShowAlert(true);
                 return true;
             }
 
@@ -96,21 +105,20 @@ function OrderCheckoutPage() {
             window.snap.pay(snapToken, {
                 onSuccess: async () => {
                     localStorage.removeItem("snapToken");
-                    setMessage("Pesanan berhasil dibuat");
+                    localStorage.removeItem("cartItems");
+                    window.location.href = "/orders/payment-success";
                 },
                 onPending: async () => {
                     await axiosInstance.delete("/carts");
                     localStorage.setItem("snapToken", snapToken);
-                    setMessage("Anda belum melakukan pembayaran. Silahkan lakukan pembayaran sebelum jatuh tempo.");
-                    setShowAlert(true);
+                    window.location.href = "/orders/" + order.id;
                 },
                 onError: async (error: any) => {
                     console.error("Payment Failed:", error);
-                    await axiosInstance.delete("/orders/myflower/" + currentOrderCode);
-                    setMessage("Terjadi kesalahan saat pembayaran.");
-                    setShowAlert(true);
+                    await axiosInstance.delete("/orders/myflower/" + order.id);
+                    window.location.href = "/orders/payment-failed";
                 },
-                onClose: async () => {},
+                onClose: async () => console.log("Payment closed"),
             });
         } catch (error: any) {
             console.log(error);
@@ -129,7 +137,7 @@ function OrderCheckoutPage() {
     return (
         <MainLayout className="w-full max-w-7xl mx-auto mb-32">
             <div className="space-y-6">
-                <BackButton onClick={handleBackButton}>Kembali ke Keranjang</BackButton>
+                <BackButton onClick={confirmBackButton}>Kembali ke Keranjang</BackButton>
                 <SectionTitle className="text-3xl font-bold">Checkout</SectionTitle>
 
                 <form className="grid md:grid-cols-2 gap-6" onSubmit={onSubmit}>
@@ -198,6 +206,15 @@ function OrderCheckoutPage() {
                             setShowAlert(false);
                         }}
                         message={message}
+                    />
+                )}
+                {showAlertConfirm && message && (
+                    <AlertConfirm
+                        message={message}
+                        handleAlert={() => {
+                            setShowAlertConfirm(false);
+                        }}
+                        handleResultConfirm={handleBackButton}
                     />
                 )}
             </AnimatePresence>
